@@ -1,7 +1,7 @@
 Baixar arquivo .jar de https://www.xypron.de/repository/org/gnu/glpk/glpk-java/1.12.0/glpk-java-1.12.0.jar
 Salvar arquivo no diretório do projeto;
 Executar comando:
-.\mvnw.cmd install:install-file -Dfile=`glpk-java-1.12.0.jar` -DgroupId=`org.gnu.glpk` -DartifactId=`glpk-java` -Dversion=`1.12.0` -Dpackaging=`jar`
+.\mvnw.cmd install:install-file -Dfile='glpk-java-1.12.0.jar' -DgroupId='org.gnu.glpk' -DartifactId='glpk-java' -Dversion='1.12.0' -Dpackaging='jar'
 
 Incluir dependência no pom.xml:
  <dependency>
