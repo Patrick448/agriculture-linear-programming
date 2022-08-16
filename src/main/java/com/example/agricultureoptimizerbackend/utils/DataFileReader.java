@@ -24,6 +24,63 @@ public class DataFileReader {
         GLPK.glp_set_obj_dir(lp, GLPKConstants.GLP_MAX);
         String[] titleRow = {};
 
+        double[] costs = readCosts();
+        double[] prices = readPrices();
+        double[] profit = new double[costs.length];
+
+        for(int i=0; i< costs.length; i++){
+            profit[i] = prices[i] - costs[i];
+        }
+
+        printArray(costs);
+        printArray(prices);
+        printArray(profit);
+
+        d = GLPK.new_doubleArray(costs.length+1);
+        ia = GLPK.new_intArray(costs.length+1);
+        ja = GLPK.new_intArray(costs.length+1);
+
+        for(int i=1; i<=costs.length; i++){
+            GLPK.doubleArray_setitem(d, i, costs[i-1]);
+            GLPK.intArray_setitem(ia, i, 1);
+            GLPK.intArray_setitem(ja, i, i);
+        }
+
+        double maxInvest = 2000.0;
+        GLPK.glp_add_rows(lp, 1);
+        GLPK.glp_set_row_name(lp, 1, "c");
+        GLPK.glp_set_row_bnds(lp, 1, GLPKConstants.GLP_UP, 0.0, maxInvest);
+
+        GLPK.glp_add_cols(lp, prices.length);
+
+        for(int i=0; i<profit.length; i++){
+            GLPK.glp_set_col_name(lp, i+1, "x" + i+1);
+            GLPK.glp_set_col_bnds(lp, i+1, GLPKConstants.GLP_LO, 0.0, 0.0);
+            GLPK.glp_set_obj_coef(lp, i+1, profit[i]);
+        }
+
+        double[] solution = new double[prices.length];
+
+        GLPK.glp_load_matrix(lp, prices.length, ia, ja, d);
+        GLPK.glp_simplex(lp,null);
+        double z =  GLPK.glp_get_obj_val(lp);
+
+        for(int i = 0; i < prices.length; i++){
+            solution[i] = GLPK.glp_get_col_prim(lp, i+1);
+        }
+
+
+
+        System.out.println("z = " +z+ "\n");
+        printArray(solution);
+
+        GLPK.glp_delete_prob(lp);
+    }
+
+
+    public static double[] readCosts(){
+        String[] titleRow = {};
+
         double[] costs = null;
 
         try {
@@ -51,26 +108,10 @@ public class DataFileReader {
             e.printStackTrace();
         }
 
-        printArray(costs);
-
-        d = GLPK.new_doubleArray(titleRow.length-1);
-        ia = GLPK.new_intArray(titleRow.length-1);
-        ja = GLPK.new_intArray(titleRow.length-1);
-
-        for(int i=1; i<titleRow.length; i++){
-            GLPK.doubleArray_setitem(d, i, costs[i]);
-            GLPK.intArray_setitem(ia, i, 1);
-            GLPK.intArray_setitem(ja, i, i);
-        }
-
-        double maxInvest = 2000.0;
-        GLPK.glp_set_row_name(lp, 1, "c");
-        GLPK.glp_set_row_bnds(lp, 1, GLPKConstants.GLP_UP, 0.0, maxInvest);
-
-        GLPK.glp_delete_prob(lp);
+        return costs;
     }
 
-    public static void lerPrecos(){
+    public static double[] readPrices(){
 
         double[]  prices = null;
 
@@ -88,7 +129,6 @@ public class DataFileReader {
                     if(i>=1){
                         prices[i-1]+=Double.parseDouble(cell);
                     }
-                    System.out.print(cell + "\t");
                 }
                 System.out.println();
             }
@@ -99,14 +139,15 @@ public class DataFileReader {
             e.printStackTrace();
         }
 
-        printArray(prices);
+        return prices;
     }
 
 
     public static void printArray(double[] array){
         for(double d: array){
-            System.out.print(d + ", ");
+            System.out.print(d + ",");
         }
+        System.out.println();
     }
 
 }

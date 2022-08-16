@@ -22,7 +22,7 @@ public class AgricultureOptimizerBackendApplication {
     public static SWIGTYPE_p_double d;
 
     public static void main(String[] args) {
-        lp = GLPK.glp_create_prob();
+        /*lp = GLPK.glp_create_prob();
         ia = GLPK.new_intArray(10);
         ja = GLPK.new_intArray(10);
         d = GLPK.new_doubleArray(10);
@@ -97,10 +97,10 @@ public class AgricultureOptimizerBackendApplication {
 
         System.out.println("z = " +z+ "; x1 = "+x1+ "; x2 ="+x2 +" ; x3 = "+ x3+";  \n");
 
-        GLPK.glp_delete_prob(lp);
+        GLPK.glp_delete_prob(lp);*/
 
-        //DataFileReader.test();
-        DataFileReader.lerPrecos();
+        DataFileReader.test();
+        DataFileReader.readPrices();
 
         //DB mongo = new DB();
 
