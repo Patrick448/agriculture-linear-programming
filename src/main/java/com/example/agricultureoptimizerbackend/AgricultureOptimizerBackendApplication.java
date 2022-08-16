@@ -1,5 +1,6 @@
 package com.example.agricultureoptimizerbackend;
 
+import com.example.agricultureoptimizerbackend.controllers.DB;
 import com.example.agricultureoptimizerbackend.utils.DataFileReader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -98,7 +99,13 @@ public class AgricultureOptimizerBackendApplication {
 
         GLPK.glp_delete_prob(lp);
 
-        DataFileReader.test();
+        //DataFileReader.test();
+        DataFileReader.lerPrecos();
+
+        //DB mongo = new DB();
+
+        //mongo.connectionDB();
+        //mongo.createProduct();
 
         //SpringApplication.run(AgricultureOptimizerBackendApplication.class, args);
     }
