@@ -1,7 +1,5 @@
 package com.example.agricultureoptimizerbackend;
 
-
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.gnu.glpk.GLPK;
@@ -20,8 +18,6 @@ public class AgricultureOptimizerBackendApplication {
     public static SWIGTYPE_p_int ja;
 
     public static SWIGTYPE_p_double d;
-
-
 
     public static void main(String[] args) {
         lp = GLPK.glp_create_prob();
