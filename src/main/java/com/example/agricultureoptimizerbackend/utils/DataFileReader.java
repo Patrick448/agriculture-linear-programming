@@ -1,10 +1,7 @@
 package com.example.agricultureoptimizerbackend.utils;
 
 import com.opencsv.CSVReader;
-import org.gnu.glpk.GLPK;
-import org.gnu.glpk.SWIGTYPE_p_double;
-import org.gnu.glpk.SWIGTYPE_p_int;
-import org.gnu.glpk.glp_prob;
+import org.gnu.glpk.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -23,6 +20,9 @@ public class DataFileReader {
         ia = GLPK.new_intArray(10);
         ja = GLPK.new_intArray(10);
         d = GLPK.new_doubleArray(10);
+        GLPK.glp_set_prob_name(lp, "sample");
+        GLPK.glp_set_obj_dir(lp, GLPKConstants.GLP_MAX);
+        String[] titleRow = {};
 
         double[] costs = null;
 
@@ -30,7 +30,7 @@ public class DataFileReader {
             fileReader = new FileReader("data/custos.csv");
             CSVReader csvReader = new CSVReader(fileReader);
             String[] nextRecord;
-            String[] titleRow = csvReader.readNext();
+            titleRow = csvReader.readNext();
 
             costs = new double[titleRow.length-1];
 
@@ -52,6 +52,22 @@ public class DataFileReader {
         }
 
         printArray(costs);
+
+        d = GLPK.new_doubleArray(titleRow.length-1);
+        ia = GLPK.new_intArray(titleRow.length-1);
+        ja = GLPK.new_intArray(titleRow.length-1);
+
+        for(int i=1; i<titleRow.length; i++){
+            GLPK.doubleArray_setitem(d, i, costs[i]);
+            GLPK.intArray_setitem(ia, i, 1);
+            GLPK.intArray_setitem(ja, i, i);
+        }
+
+        double maxInvest = 2000.0;
+        GLPK.glp_set_row_name(lp, 1, "c");
+        GLPK.glp_set_row_bnds(lp, 1, GLPKConstants.GLP_UP, 0.0, maxInvest);
+
+        GLPK.glp_delete_prob(lp);
     }
 
 
