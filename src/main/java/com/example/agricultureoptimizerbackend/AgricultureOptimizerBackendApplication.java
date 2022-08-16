@@ -1,5 +1,6 @@
 package com.example.agricultureoptimizerbackend;
 
+import com.example.agricultureoptimizerbackend.utils.DataFileReader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.gnu.glpk.GLPK;
@@ -96,6 +97,9 @@ public class AgricultureOptimizerBackendApplication {
         System.out.println("z = " +z+ "; x1 = "+x1+ "; x2 ="+x2 +" ; x3 = "+ x3+";  \n");
 
         GLPK.glp_delete_prob(lp);
+
+        DataFileReader.test();
+
         //SpringApplication.run(AgricultureOptimizerBackendApplication.class, args);
     }
 
