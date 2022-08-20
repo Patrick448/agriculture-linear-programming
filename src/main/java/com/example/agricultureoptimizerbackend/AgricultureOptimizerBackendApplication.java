@@ -15,11 +15,11 @@ import org.gnu.glpk.glp_smcp;
 @SpringBootApplication
 public class AgricultureOptimizerBackendApplication {
 
-    public static glp_prob lp;
-    public static SWIGTYPE_p_int ia;
-    public static SWIGTYPE_p_int ja;
+    //public static glp_prob lp;
+    //public static SWIGTYPE_p_int ia;
+    //public static SWIGTYPE_p_int ja;
 
-    public static SWIGTYPE_p_double d;
+    //public static SWIGTYPE_p_double d;
 
     public static void main(String[] args) {
         /*lp = GLPK.glp_create_prob();
@@ -99,15 +99,15 @@ public class AgricultureOptimizerBackendApplication {
 
         GLPK.glp_delete_prob(lp);*/
 
-        DataFileReader.test();
-        DataFileReader.readPrices();
+        //DataFileReader.test();
+        //DataFileReader.readPrices();
 
         //DB mongo = new DB();
 
         //mongo.connectionDB();
         //mongo.createProduct();
 
-        //SpringApplication.run(AgricultureOptimizerBackendApplication.class, args);
+        SpringApplication.run(AgricultureOptimizerBackendApplication.class, args);
     }
 
 }
