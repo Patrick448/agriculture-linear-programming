@@ -1,10 +1,16 @@
 package com.example.agricultureoptimizerbackend.controllers;
 
+import com.example.agricultureoptimizerbackend.dto.CropDTO;
+import com.example.agricultureoptimizerbackend.dto.InputDataDTO;
+import com.example.agricultureoptimizerbackend.dto.SolutionCropDTO;
+import com.example.agricultureoptimizerbackend.dto.SolutionDTO;
 import com.example.agricultureoptimizerbackend.model.Crop;
 import com.example.agricultureoptimizerbackend.model.InputData;
 import com.example.agricultureoptimizerbackend.model.Solution;
 import com.example.agricultureoptimizerbackend.model.SolutionCrop;
 import com.example.agricultureoptimizerbackend.services.CropService;
+import com.example.agricultureoptimizerbackend.services.InputDataService;
+import com.example.agricultureoptimizerbackend.services.SolutionCropService;
 import com.example.agricultureoptimizerbackend.services.SolutionService;
 import com.example.agricultureoptimizerbackend.utils.DataFileReader;
 import org.gnu.glpk.*;
@@ -28,6 +34,10 @@ public class MainController {
     CropService cropService;
     @Autowired
     SolutionService solutionService;
+    @Autowired
+    SolutionCropService solutionCropService;
+    @Autowired
+    InputDataService inputDataService;
 
     @GetMapping(value="/test")
     public ResponseEntity<String> test(HttpServletResponse response){
@@ -131,6 +141,76 @@ public class MainController {
         GLPK.glp_delete_prob(lp);
 
         return ResponseEntity.ok(solutionObject);
+    }
+
+
+    @PostMapping(value = "/solve-db")
+    public ResponseEntity<SolutionDTO> solveUsingDB(HttpServletResponse response, @RequestBody InputData inputData){
+
+        glp_prob lp;
+        SWIGTYPE_p_int ia;
+        SWIGTYPE_p_int ja;
+        SWIGTYPE_p_double d;
+
+        lp = GLPK.glp_create_prob();
+        d = GLPK.new_doubleArray(1000);
+        ia = GLPK.new_intArray(1000);
+        ja = GLPK.new_intArray(1000);
+        GLPK.glp_set_prob_name(lp, "sample");
+        GLPK.glp_set_obj_dir(lp, GLPKConstants.GLP_MAX);
+
+        List<Crop> cropList = cropService.findAllEntities();
+        GLPK.glp_add_cols(lp, cropList.size());
+
+        for (int i = 0; i < cropList.size(); i++) {
+
+            double cost =cropList.get(i).getCost();
+            double profit = cropList.get(i).getProfit();
+
+            GLPK.doubleArray_setitem(d, i+1, cost);
+            GLPK.intArray_setitem(ia, i+1, 1);
+            GLPK.intArray_setitem(ja, i+1, i+1);
+
+            GLPK.glp_set_col_name(lp, i + 1, "x" + (i + 1));
+            GLPK.glp_set_col_bnds(lp, i + 1, GLPKConstants.GLP_LO, 0.0, 0.0);
+            GLPK.glp_set_obj_coef(lp, i + 1, profit);
+        }
+
+        double maxInvest = inputData.getBudget();
+        GLPK.glp_add_rows(lp, 1);
+        GLPK.glp_set_row_name(lp, 1, "c");
+        GLPK.glp_set_row_bnds(lp, 1, GLPKConstants.GLP_UP, 0.0, maxInvest);
+
+        double[] solution = new double[cropList.size()];
+        GLPK.glp_load_matrix(lp, cropList.size(), ia, ja, d);
+        printSystem(lp);
+        GLPK.glp_simplex(lp, null);
+        double z = GLPK.glp_get_obj_val(lp);
+
+        Solution solutionObject = new Solution();
+        List<SolutionCrop> solutionCrops = new ArrayList<SolutionCrop>();
+
+        solutionObject.setSolutionCrops(solutionCrops);
+        solutionObject.setInputData(inputData);
+        inputData.setSolution(solutionObject);
+        //solutionService.save(solutionObject);
+
+        //inputDataService.save(inputData);
+
+        for (int i = 0; i < cropList.size(); i++) {
+            double amount = GLPK.glp_get_col_prim(lp, i + 1);
+            Crop crop = cropList.get(i);
+            SolutionCrop solutionCrop = new SolutionCrop((int)amount, solutionObject,  crop);
+            solutionCrops.add(solutionCrop);
+
+            solution[i] = amount;
+        }
+
+        solutionService.save(solutionObject);
+        System.out.println("z = " + z + "\n");
+        DataFileReader.printArray(solution);
+        GLPK.glp_delete_prob(lp);
+        return ResponseEntity.ok(new SolutionDTO(solutionObject));
     }
 
     public void printSystem(glp_prob lp){

@@ -1,9 +1,13 @@
 package com.example.agricultureoptimizerbackend.model;
 
+import com.example.agricultureoptimizerbackend.dto.InputDataDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name="input_data")
 public class InputData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,8 +19,8 @@ public class InputData {
     @Column(name = "space", nullable = false)
     private double space;
 
-    @OneToOne
-    @JoinColumn(name = "solution_id")
+    @JsonIgnore
+    @OneToOne(mappedBy = "inputData")
     private Solution solution;
 
     public Solution getSolution() {
@@ -36,6 +40,13 @@ public class InputData {
     public InputData() {
     }
 
+    public InputData(InputDataDTO dto) {
+        this.id = dto.getId();
+        this.budget = dto.getBudget();
+        this.space = dto.getSpace();
+
+    }
+
     public double getBudget() {
         return budget;
     }
@@ -50,5 +61,9 @@ public class InputData {
 
     public void setSpace(double space) {
         this.space = space;
+    }
+
+    public void setSolution(Solution solution) {
+        this.solution = solution;
     }
 }

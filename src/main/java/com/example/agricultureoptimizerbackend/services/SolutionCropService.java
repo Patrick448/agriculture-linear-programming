@@ -1,5 +1,6 @@
 package com.example.agricultureoptimizerbackend.services;
 
+import com.example.agricultureoptimizerbackend.dto.SolutionCropDTO;
 import com.example.agricultureoptimizerbackend.model.Crop;
 import com.example.agricultureoptimizerbackend.model.Solution;
 import com.example.agricultureoptimizerbackend.model.SolutionCrop;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SolutionCropService {
@@ -18,10 +20,10 @@ public class SolutionCropService {
     private SolutionCropRepository repository;
 
     @Transactional(readOnly = true)
-    public List<SolutionCrop> findAll(){
+    public List<SolutionCropDTO> findAll(){
        List<SolutionCrop> result = repository.findAll();
 
-       return result;
+       return result.stream().map(SolutionCropDTO::new).collect(Collectors.toList());
     }
 
     @Transactional
@@ -30,8 +32,16 @@ public class SolutionCropService {
     }
 
     @Transactional(readOnly = true)
-    public SolutionCrop findById(Long id){
+    public SolutionCropDTO findById(Long id){
         SolutionCrop result = repository.findById(id).orElse(null);
-        return result;
+        if(result == null){
+            return null;
+        }
+        return new SolutionCropDTO(result);
+    }
+
+    @Transactional
+    public SolutionCropDTO save(SolutionCropDTO dto){
+        return new SolutionCropDTO(repository.save(new SolutionCrop(dto)));
     }
 }

@@ -1,7 +1,12 @@
 package com.example.agricultureoptimizerbackend.model;
 
+import com.example.agricultureoptimizerbackend.dto.InputDataDTO;
+import com.example.agricultureoptimizerbackend.dto.SolutionCropDTO;
+import com.example.agricultureoptimizerbackend.dto.SolutionDTO;
+
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Solution {
@@ -9,9 +14,10 @@ public class Solution {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    @OneToMany
+    @OneToMany(mappedBy = "solution",cascade=CascadeType.PERSIST)
     private List<SolutionCrop> solutionCrops;
-    @OneToOne
+
+    @OneToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name = "input_data_id")
     private InputData inputData;
 
@@ -24,6 +30,14 @@ public class Solution {
     }
 
     public Solution() {
+    }
+
+    public Solution(SolutionDTO dto) {
+        this.id = dto.getId();
+        this.solutionCrops = dto.getSolutionCrops().stream().map(SolutionCrop::new).collect(Collectors.toList());
+        InputData inputData = new InputData(dto.getInputData());
+        inputData.setSolution(this);
+        this.inputData = inputData;
     }
 
     public List<SolutionCrop> getSolutionCrops() {

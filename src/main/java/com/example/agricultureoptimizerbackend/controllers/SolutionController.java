@@ -1,5 +1,6 @@
 package com.example.agricultureoptimizerbackend.controllers;
 
+import com.example.agricultureoptimizerbackend.dto.SolutionDTO;
 import com.example.agricultureoptimizerbackend.model.Crop;
 import com.example.agricultureoptimizerbackend.model.Solution;
 import com.example.agricultureoptimizerbackend.services.CropService;
@@ -23,8 +24,8 @@ public class SolutionController {
     SolutionService solutionService;
 
     @GetMapping(value="/get-all")
-    public ResponseEntity<List<Solution>> test(HttpServletResponse response){
-        List<Solution> cropList = solutionService.findAll();
+    public ResponseEntity<List<SolutionDTO>> test(HttpServletResponse response){
+        List<SolutionDTO> cropList = solutionService.findAll();
         System.out.println("Solutions");
         return ResponseEntity.ok(cropList);
     }

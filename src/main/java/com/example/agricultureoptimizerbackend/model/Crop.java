@@ -1,5 +1,6 @@
 package com.example.agricultureoptimizerbackend.model;
 
+import com.example.agricultureoptimizerbackend.dto.CropDTO;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
 import javax.persistence.*;
@@ -16,8 +17,7 @@ public class Crop {
     private Double price;
     @Column(name = "cost", nullable = false)
     private Double cost;
-   // @Column(name = "amount", nullable = false)
-    //private int amount;
+
 
     public Long getId() {
         return id;
@@ -28,6 +28,13 @@ public class Crop {
     }
 
     public Crop() {
+    }
+
+    public Crop(CropDTO dto) {
+        this.id = dto.getId();
+        this.name = dto.getName();
+        this.price = dto.getPrice();
+        this.cost = dto.getCost();
     }
 
     public Double getPrice() {
@@ -59,6 +66,10 @@ public class Crop {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public double getProfit(){
+        return this.price - this.cost;
     }
 
     // public int getAmount() {

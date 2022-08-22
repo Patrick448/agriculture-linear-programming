@@ -1,5 +1,7 @@
 package com.example.agricultureoptimizerbackend.model;
 
+import com.example.agricultureoptimizerbackend.dto.CropDTO;
+import com.example.agricultureoptimizerbackend.dto.SolutionCropDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -16,7 +18,7 @@ public class SolutionCrop {
     @ManyToOne
     private Solution solution;
 
-    @ManyToOne
+    @ManyToOne(cascade={CascadeType.MERGE})
     private Crop crop;
 
     public SolutionCrop() {
@@ -26,6 +28,12 @@ public class SolutionCrop {
         this.amount = amount;
         this.solution = solution;
         this.crop = crop;
+    }
+
+    public SolutionCrop(SolutionCropDTO dto) {
+        this.crop = new Crop(dto.getCrop());
+        this.amount = dto.getAmount();
+        this.id = dto.getId();
     }
 
     public Crop getCrop() {
