@@ -147,6 +147,37 @@ public class DataFileReader {
         return prices;
     }
 
+    public static double[] readSpaces() {
+
+        double[] spaces = null;
+
+        try {
+            fileReader = new FileReader("data/espaco.csv");
+            CSVReader csvReader = new CSVReader(fileReader);
+            String[] nextRecord;
+            String[] titleRow = csvReader.readNext();
+
+            spaces = new double[titleRow.length - 1];
+
+            while ((nextRecord = csvReader.readNext()) != null) {
+                for (int i = 0; i < nextRecord.length; i++) {
+                    String cell = nextRecord[i];
+                    if (i >= 1) {
+                        spaces[i - 1] += Double.parseDouble(cell);
+                    }
+                }
+                System.out.println();
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return spaces;
+    }
+
     public static double[][] readRotation() {
 
         double[][] rotation = null;

@@ -7,15 +7,17 @@ import javax.persistence.*;
 @Entity(name="crop")
 public class Crop {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    @Column(name = "name", length = 20, nullable = false)
+    private String name;
     @Column(name = "price", nullable = false)
     private Double price;
     @Column(name = "cost", nullable = false)
     private Double cost;
-    @Column(name = "amount", nullable = false)
-    private int amount;
+   // @Column(name = "amount", nullable = false)
+    //private int amount;
 
     public Long getId() {
         return id;
@@ -32,10 +34,11 @@ public class Crop {
         return price;
     }
 
-    public Crop(Double price, Double cost, int amount) {
+    public Crop(String name, Double price, Double cost) {
+        this.name = name;
         this.price = price;
         this.cost = cost;
-        this.amount = amount;
+        //this.amount = amount;
     }
 
     public void setPrice(Double price) {
@@ -50,11 +53,19 @@ public class Crop {
         this.cost = cost;
     }
 
-    public int getAmount() {
-        return amount;
+    public String getName() {
+        return name;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public void setName(String name) {
+        this.name = name;
     }
+
+    // public int getAmount() {
+   //     return amount;
+   // }
+
+    //public void setAmount(int amount) {
+     //   this.amount = amount;
+   // }
 }

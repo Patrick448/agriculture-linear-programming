@@ -6,12 +6,14 @@ import java.util.List;
 @Entity
 public class Solution {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
     @OneToMany
-    private List<Crop> crops;
+    private List<SolutionCrop> solutionCrops;
+    @OneToOne
+    @JoinColumn(name = "input_data_id")
+    private InputData inputData;
 
     public Long getId() {
         return id;
@@ -24,11 +26,19 @@ public class Solution {
     public Solution() {
     }
 
-    public List<Crop> getCrops() {
-        return crops;
+    public List<SolutionCrop> getSolutionCrops() {
+        return solutionCrops;
     }
 
-    public void setCrops(List<Crop> crops) {
-        this.crops = crops;
+    public void setSolutionCrops(List<SolutionCrop> solutionCrops) {
+        this.solutionCrops = solutionCrops;
+    }
+
+    public InputData getInputData() {
+        return inputData;
+    }
+
+    public void setInputData(InputData inputData) {
+        this.inputData = inputData;
     }
 }

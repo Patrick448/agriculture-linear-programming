@@ -6,12 +6,22 @@ import java.util.List;
 @Entity
 public class InputData {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "budget", nullable = false)
     private double budget;
+    @Column(name = "space", nullable = false)
+    private double space;
+
+    @OneToOne
+    @JoinColumn(name = "solution_id")
+    private Solution solution;
+
+    public Solution getSolution() {
+        return solution;
+    }
     //private List<Double> plots;
     //private List<Crop> crops;
 
@@ -34,5 +44,11 @@ public class InputData {
         this.budget = budget;
     }
 
+    public double getSpace() {
+        return space;
+    }
 
+    public void setSpace(double space) {
+        this.space = space;
+    }
 }
