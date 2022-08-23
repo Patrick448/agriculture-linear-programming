@@ -49,7 +49,7 @@ public class MainController {
         return ResponseEntity.ok("Test");
     }
 
-    @PostMapping(value = "/solve")
+    @PostMapping(value = "/solve-1")
     public ResponseEntity<Solution> solve(HttpServletResponse response, @RequestBody InputData inputData){
 
         glp_prob lp;
@@ -144,7 +144,7 @@ public class MainController {
     }
 
 
-    @PostMapping(value = "/solve-db")
+    @PostMapping(value = "/solve")
     public ResponseEntity<SolutionDTO> solveUsingDB(HttpServletResponse response, @RequestBody InputData inputData){
 
         glp_prob lp;
@@ -165,13 +165,19 @@ public class MainController {
         for (int i = 0; i < cropList.size(); i++) {
 
             double cost =cropList.get(i).getCost();
+            //double space =cropList.get(i).getSpace();
             double profit = cropList.get(i).getProfit();
 
             GLPK.doubleArray_setitem(d, i+1, cost);
             GLPK.intArray_setitem(ia, i+1, 1);
             GLPK.intArray_setitem(ja, i+1, i+1);
 
+            /*GLPK.doubleArray_setitem(d, cropList.size()+i+1, space);
+            GLPK.intArray_setitem(ia, cropList.size()+i+1, 2);
+            GLPK.intArray_setitem(ja, cropList.size()+i+1, i+1);*/
+
             GLPK.glp_set_col_name(lp, i + 1, "x" + (i + 1));
+            GLPK.glp_set_col_kind(lp, i+1, GLPKConstants.GLP_IV);
             GLPK.glp_set_col_bnds(lp, i + 1, GLPKConstants.GLP_LO, 0.0, 0.0);
             GLPK.glp_set_obj_coef(lp, i + 1, profit);
         }
