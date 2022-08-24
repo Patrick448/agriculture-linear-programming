@@ -21,7 +21,7 @@ public class CropController {
     CropService cropService;
 
     @GetMapping(value="/get-all")
-    public ResponseEntity<List<CropDTO>> test(HttpServletResponse response){
+    public ResponseEntity<List<CropDTO>> getAll(HttpServletResponse response){
         List<CropDTO> cropList = cropService.findAll();
         System.out.println("Crops");
         return ResponseEntity.ok(cropList);
@@ -35,7 +35,7 @@ public class CropController {
     }
 
     @PutMapping (value="/new")
-    public ResponseEntity<CropDTO> get(HttpServletResponse response, @RequestBody Crop crop){
+    public ResponseEntity<CropDTO> newCrop(HttpServletResponse response, @RequestBody Crop crop){
         return ResponseEntity.ok(new CropDTO(cropService.save(crop)));
     }
 }

@@ -31,9 +31,9 @@ public class SolutionController {
     }
 
     @GetMapping(value="/get/{id}")
-    public ResponseEntity<Solution> get(HttpServletResponse response, @PathVariable("id") Long id){
+    public ResponseEntity<SolutionDTO> get(HttpServletResponse response, @PathVariable("id") Long id){
 
-        Solution solution= solutionService.findById(id);
+        SolutionDTO solution= solutionService.findByIdDTO(id);
         return ResponseEntity.ok(solution);
     }
 }

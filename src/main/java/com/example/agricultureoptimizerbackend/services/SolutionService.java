@@ -36,6 +36,16 @@ public class SolutionService {
         return result;
     }
 
+    @Transactional(readOnly = true)
+    public SolutionDTO findByIdDTO(Long id){
+        Solution result = repository.findById(id).orElse(null);
+
+        if(result != null)
+            return new SolutionDTO(result);
+
+        return null;
+    }
+
     @Transactional
     public Solution save(SolutionDTO dto){
         return repository.save(new Solution(dto));

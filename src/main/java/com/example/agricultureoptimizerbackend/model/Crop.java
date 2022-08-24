@@ -10,13 +10,18 @@ public class Crop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private long id;
     @Column(name = "name", length = 20, nullable = false)
     private String name;
     @Column(name = "price", nullable = false)
-    private Double price;
+    private double price;
     @Column(name = "cost", nullable = false)
-    private Double cost;
+    private double cost;
+    @Column(name = "space", nullable = false)
+    private double space;
+    @Column(name = "time", nullable = false)
+    private double time;
+
 
 
     public Long getId() {
@@ -35,13 +40,15 @@ public class Crop {
         this.name = dto.getName();
         this.price = dto.getPrice();
         this.cost = dto.getCost();
+        this.space = dto.getSpace();
+        this.time = dto.getTime();
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public Crop(String name, Double price, Double cost) {
+    public Crop(String name, double price, double cost, double space, double time) {
         this.name = name;
         this.price = price;
         this.cost = cost;
@@ -72,7 +79,22 @@ public class Crop {
         return this.price - this.cost;
     }
 
-    // public int getAmount() {
+    public Double getSpace() {
+        return space;
+    }
+
+    public void setSpace(Double space) {
+        this.space = space;
+    }
+
+    public Double getTime() {
+        return time;
+    }
+
+    public void setTime(Double time) {
+        this.time = time;
+    }
+// public int getAmount() {
    //     return amount;
    // }
 

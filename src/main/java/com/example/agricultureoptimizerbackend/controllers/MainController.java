@@ -44,7 +44,7 @@ public class MainController {
         System.out.println("Test");
 
 
-        Crop crop = new Crop("alface", 5.0,2.0);
+        Crop crop = new Crop("alface", 5.0,2.0, 1.0, 1.0);
         cropService.save(crop);
         return ResponseEntity.ok("Test");
     }
@@ -130,7 +130,7 @@ public class MainController {
 
         for (int i = 0; i < prices.length; i++) {
             solution[i] = GLPK.glp_get_col_prim(lp, i + 1);
-            Crop crop = new Crop("couve", prices[i], costs[i]);
+            Crop crop = new Crop("couve", prices[i], costs[i], 1.0, 1.0);
             solutionCrops.add(new SolutionCrop((int)solution[i], solutionObject, crop));
         }
 
@@ -165,16 +165,16 @@ public class MainController {
         for (int i = 0; i < cropList.size(); i++) {
 
             double cost =cropList.get(i).getCost();
-            //double space =cropList.get(i).getSpace();
+            double space =cropList.get(i).getSpace();
             double profit = cropList.get(i).getProfit();
 
             GLPK.doubleArray_setitem(d, i+1, cost);
             GLPK.intArray_setitem(ia, i+1, 1);
             GLPK.intArray_setitem(ja, i+1, i+1);
 
-            /*GLPK.doubleArray_setitem(d, cropList.size()+i+1, space);
+            GLPK.doubleArray_setitem(d, cropList.size()+i+1, space);
             GLPK.intArray_setitem(ia, cropList.size()+i+1, 2);
-            GLPK.intArray_setitem(ja, cropList.size()+i+1, i+1);*/
+            GLPK.intArray_setitem(ja, cropList.size()+i+1, i+1);
 
             GLPK.glp_set_col_name(lp, i + 1, "x" + (i + 1));
             GLPK.glp_set_col_kind(lp, i+1, GLPKConstants.GLP_IV);
@@ -183,15 +183,21 @@ public class MainController {
         }
 
         double maxInvest = inputData.getBudget();
-        GLPK.glp_add_rows(lp, 1);
+        double maxSpace = inputData.getSpace();
+        GLPK.glp_add_rows(lp, 2);
+
         GLPK.glp_set_row_name(lp, 1, "c");
         GLPK.glp_set_row_bnds(lp, 1, GLPKConstants.GLP_UP, 0.0, maxInvest);
 
+        GLPK.glp_set_row_name(lp, 2, "s");
+        GLPK.glp_set_row_bnds(lp, 2, GLPKConstants.GLP_UP, 0.0, maxSpace);
+
         double[] solution = new double[cropList.size()];
-        GLPK.glp_load_matrix(lp, cropList.size(), ia, ja, d);
+        GLPK.glp_load_matrix(lp, cropList.size()*2, ia, ja, d);
         printSystem(lp);
         GLPK.glp_simplex(lp, null);
-        double z = GLPK.glp_get_obj_val(lp);
+        GLPK.glp_intopt(lp, null);
+        double z = GLPK.glp_mip_obj_val(lp);
 
         Solution solutionObject = new Solution();
         List<SolutionCrop> solutionCrops = new ArrayList<SolutionCrop>();
@@ -204,7 +210,7 @@ public class MainController {
         //inputDataService.save(inputData);
 
         for (int i = 0; i < cropList.size(); i++) {
-            double amount = GLPK.glp_get_col_prim(lp, i + 1);
+            double amount = GLPK.glp_mip_col_val(lp, i + 1);
             Crop crop = cropList.get(i);
             SolutionCrop solutionCrop = new SolutionCrop((int)amount, solutionObject,  crop);
             solutionCrops.add(solutionCrop);

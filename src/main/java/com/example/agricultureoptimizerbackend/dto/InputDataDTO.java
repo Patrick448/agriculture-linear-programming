@@ -13,6 +13,7 @@ public class InputDataDTO implements Serializable {
     private Long id;
     private double budget;
     private double space;
+    @JsonIgnore
     private SolutionDTO solution;
 
     public InputDataDTO(InputData entity) {
