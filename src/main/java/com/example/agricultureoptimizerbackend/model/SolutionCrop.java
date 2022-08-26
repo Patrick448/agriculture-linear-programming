@@ -5,6 +5,7 @@ import com.example.agricultureoptimizerbackend.dto.SolutionCropDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class SolutionCrop {
@@ -14,6 +15,17 @@ public class SolutionCrop {
     private Long id;
     @Column(name = "amount", nullable = false)
     private int amount;
+    @Column(name = "price", nullable = false)
+    private double price;
+    @Column(name = "space", nullable = false)
+    private double space;
+    @Column(name = "time", nullable = false)
+    private double time;
+    @Column(name = "cost", nullable = false)
+    private double cost;
+    @Column(name="time_frame")
+    private int timeFrame;
+
     @JsonIgnore
     @ManyToOne
     private Solution solution;
@@ -21,19 +33,32 @@ public class SolutionCrop {
     @ManyToOne(cascade={CascadeType.MERGE})
     private Crop crop;
 
+    @ManyToOne(cascade={CascadeType.MERGE})
+    private Field field;
+
+
     public SolutionCrop() {
     }
 
-    public SolutionCrop(int amount, Solution solution, Crop crop) {
+    public SolutionCrop(int amount, Solution solution, Crop crop, double price, double space, double time, double cost) {
         this.amount = amount;
         this.solution = solution;
         this.crop = crop;
+        this.price = price;
+        this.space =space;
+        this.time = time;
+        this.cost = cost;
+
     }
 
     public SolutionCrop(SolutionCropDTO dto) {
         this.crop = new Crop(dto.getCrop());
         this.amount = dto.getAmount();
         this.id = dto.getId();
+        this.price = dto.getPrice();
+        this.space = dto.getSpace();
+        this.time = dto.getTime();
+        this.cost = dto.getCost();
     }
 
     public Crop getCrop() {
@@ -66,5 +91,53 @@ public class SolutionCrop {
 
     public void setSolution(Solution solution) {
         this.solution = solution;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getSpace() {
+        return space;
+    }
+
+    public void setSpace(double space) {
+        this.space = space;
+    }
+
+    public double getTime() {
+        return time;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
+    public int getTimeFrame() {
+        return timeFrame;
+    }
+
+    public void setTimeFrame(int timeFrame) {
+        this.timeFrame = timeFrame;
+    }
+
+    public Field getField() {
+        return field;
+    }
+
+    public void setField(Field field) {
+        this.field = field;
     }
 }

@@ -23,6 +23,11 @@ public class InputData {
     @OneToOne(mappedBy = "inputData")
     private Solution solution;
 
+    @Transient
+    @OneToMany
+    private List<Crop> selectedCrops;
+
+
     public Solution getSolution() {
         return solution;
     }
@@ -65,5 +70,13 @@ public class InputData {
 
     public void setSolution(Solution solution) {
         this.solution = solution;
+    }
+
+    public List<Crop> getSelectedCrops() {
+        return selectedCrops;
+    }
+
+    public void setSelectedCrops(List<Crop> selectedCrops) {
+        this.selectedCrops = selectedCrops;
     }
 }

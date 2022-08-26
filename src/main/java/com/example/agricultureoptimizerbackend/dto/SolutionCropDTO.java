@@ -14,6 +14,10 @@ public class SolutionCropDTO implements Serializable {
     private Long id;
     private int amount;
     private CropDTO crop;
+    private double price;
+    private double space;
+    private double time;
+    private double cost;
 
     public SolutionCropDTO() {
     }
@@ -22,11 +26,20 @@ public class SolutionCropDTO implements Serializable {
         this.crop = new CropDTO(entity.getCrop());
         this.amount = entity.getAmount();
         this.id = entity.getId();
+        this.price = entity.getPrice();
+        this.space = entity.getSpace();
+        this.time = entity.getTime();
+        this.cost = entity.getCost();
     }
 
-    public SolutionCropDTO(int amount, CropDTO crop) {
+    public SolutionCropDTO(Long id, int amount, CropDTO crop, double price, double space, double time, double cost) {
+        this.id = id;
         this.amount = amount;
         this.crop = crop;
+        this.price = price;
+        this.space = space;
+        this.time = time;
+        this.cost = cost;
     }
 
     public CropDTO getCrop() {
@@ -53,5 +66,35 @@ public class SolutionCropDTO implements Serializable {
         this.amount = amount;
     }
 
+    public double getPrice() {
+        return price;
+    }
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getSpace() {
+        return space;
+    }
+
+    public void setSpace(double space) {
+        this.space = space;
+    }
+
+    public double getTime() {
+        return time;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
 }
