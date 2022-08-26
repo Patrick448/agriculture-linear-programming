@@ -1,6 +1,7 @@
 package com.example.agricultureoptimizerbackend.dto;
 
 import com.example.agricultureoptimizerbackend.model.Crop;
+import com.example.agricultureoptimizerbackend.model.Field;
 import com.example.agricultureoptimizerbackend.model.Solution;
 import com.example.agricultureoptimizerbackend.model.SolutionCrop;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,6 +19,8 @@ public class SolutionCropDTO implements Serializable {
     private double space;
     private double time;
     private double cost;
+    private FieldDTO field;
+    private int timeFrame;
 
     public SolutionCropDTO() {
     }
@@ -30,9 +33,11 @@ public class SolutionCropDTO implements Serializable {
         this.space = entity.getSpace();
         this.time = entity.getTime();
         this.cost = entity.getCost();
+        this.field = new FieldDTO(entity.getField());
+        this.timeFrame = entity.getTimeFrame();
     }
 
-    public SolutionCropDTO(Long id, int amount, CropDTO crop, double price, double space, double time, double cost) {
+    public SolutionCropDTO(Long id, int amount, CropDTO crop, double price, double space, double time, double cost, int timeFrame, FieldDTO field) {
         this.id = id;
         this.amount = amount;
         this.crop = crop;
@@ -40,6 +45,8 @@ public class SolutionCropDTO implements Serializable {
         this.space = space;
         this.time = time;
         this.cost = cost;
+        this.timeFrame = timeFrame;
+        this.field = field;
     }
 
     public CropDTO getCrop() {
@@ -96,5 +103,21 @@ public class SolutionCropDTO implements Serializable {
 
     public void setCost(double cost) {
         this.cost = cost;
+    }
+
+    public FieldDTO getField() {
+        return field;
+    }
+
+    public void setField(FieldDTO field) {
+        this.field = field;
+    }
+
+    public int getTimeFrame() {
+        return timeFrame;
+    }
+
+    public void setTimeFrame(int timeFrame) {
+        this.timeFrame = timeFrame;
     }
 }

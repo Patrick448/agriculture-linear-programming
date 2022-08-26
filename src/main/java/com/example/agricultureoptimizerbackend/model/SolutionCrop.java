@@ -33,22 +33,24 @@ public class SolutionCrop {
     @ManyToOne(cascade={CascadeType.MERGE})
     private Crop crop;
 
-    @ManyToOne(cascade={CascadeType.MERGE})
+    @ManyToOne(cascade={CascadeType.MERGE, CascadeType.PERSIST})
     private Field field;
 
 
     public SolutionCrop() {
     }
 
-    public SolutionCrop(int amount, Solution solution, Crop crop, double price, double space, double time, double cost) {
+    public SolutionCrop(Long id, int amount, double price, double space, double time, double cost, int timeFrame, Solution solution, Crop crop, Field field) {
+        this.id = id;
         this.amount = amount;
-        this.solution = solution;
-        this.crop = crop;
         this.price = price;
-        this.space =space;
+        this.space = space;
         this.time = time;
         this.cost = cost;
-
+        this.timeFrame = timeFrame;
+        this.solution = solution;
+        this.crop = crop;
+        this.field = field;
     }
 
     public SolutionCrop(SolutionCropDTO dto) {
@@ -59,6 +61,8 @@ public class SolutionCrop {
         this.space = dto.getSpace();
         this.time = dto.getTime();
         this.cost = dto.getCost();
+        this.timeFrame= dto.getTimeFrame();
+        this.field = new Field(dto.getField());
     }
 
     public Crop getCrop() {

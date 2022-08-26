@@ -27,6 +27,10 @@ public class InputData {
     @OneToMany
     private List<Crop> selectedCrops;
 
+    @Transient
+    @OneToMany
+    private List<Field> fields;
+
 
     public Solution getSolution() {
         return solution;
@@ -78,5 +82,13 @@ public class InputData {
 
     public void setSelectedCrops(List<Crop> selectedCrops) {
         this.selectedCrops = selectedCrops;
+    }
+
+    public List<Field> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<Field> fields) {
+        this.fields = fields;
     }
 }
