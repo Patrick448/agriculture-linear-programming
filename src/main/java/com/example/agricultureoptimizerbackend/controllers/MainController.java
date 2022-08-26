@@ -285,13 +285,13 @@ public class MainController {
                     double cost = cropList.get(i).getCost();
                     double space = cropList.get(i).getSpace();
                     double time = cropList.get(i).getTime();
-                    double fieldProfit = (fieldSize/space)*profit;
-                    double fieldCost = (fieldSize/space)*cost;
+                    double fieldProfitByTimeFrame = (fieldSize/space)*profit/time;
+                    double fieldCostByTimeFrame = (fieldSize/space)*cost/time;
                     int columnIndex = (i+1)+3*(j)+9*(k);
 
 
                     //coeficientes e posições da restrição de investimento
-                    GLPK.doubleArray_setitem(d, index, fieldCost);
+                    GLPK.doubleArray_setitem(d, index, fieldCostByTimeFrame);
                     GLPK.intArray_setitem(ia, index, 1);
                     GLPK.intArray_setitem(ja, index, (i+1)+3*(j)+9*(k));
 
@@ -306,15 +306,11 @@ public class MainController {
                     index++;
 
         //***** restrições de rotação
-                   /* GLPK.doubleArray_setitem(d, index + 54, -(M * time));
-                    GLPK.intArray_setitem(ia, index + 54, 9 + 1 + rotationRestrictionCounter);
-                    GLPK.intArray_setitem(ja, index + 54, 0);
+                    
 
-                    index++;*/
-
-
+                    //não plantar sem rotacionar
                     if(k < 3-time) {
-                        for (int x = 0; x < (int) time && x + (int) time <= 3; x++) {
+                        for (int x = 0; x < (int) time /* && x + (int) time <= 3*/; x++) {
                             GLPK.doubleArray_setitem(d, index, M);
                             GLPK.intArray_setitem(ia, index, 9 + 1 + rotationRestrictionCounter);
                             GLPK.intArray_setitem(ja, index, (i + 1) + 3 * (j) + 9 * (k+x));
@@ -330,6 +326,33 @@ public class MainController {
                         GLPK.glp_set_row_bnds(lp, 9 + 1 + rotationRestrictionCounter, GLPKConstants.GLP_DB, 0, M * time);
 
                         rotationRestrictionCounter++;
+
+                    }
+
+
+                    if(k==3-time-1){//não plantar sem que o tempo de cultivo caiba no período estipulado
+
+                        //o índice k vai de 3-time-1 até k+time
+                        for (int x = 0; x < (int) time; x++) {
+                            GLPK.doubleArray_setitem(d, index, -1);
+                            GLPK.intArray_setitem(ia, index, 9 + 1 + rotationRestrictionCounter);
+                            GLPK.intArray_setitem(ja, index, (i + 1) + 3 * (j) + 9 * (k+x));
+                            index++;
+                        }
+
+                        GLPK.doubleArray_setitem(d, index, M-1);
+                        GLPK.intArray_setitem(ia, index, 9 + 1 + rotationRestrictionCounter);
+                        GLPK.intArray_setitem(ja, index, (i + 1) + 3 * (j) + 9 * (k+(int) time) );
+                        index++;
+
+                        GLPK.glp_add_rows(lp, 1);
+                        GLPK.glp_set_row_name(lp, 9 + 1 + rotationRestrictionCounter, "r" + rotationRestrictionCounter);
+                        GLPK.glp_set_row_bnds(lp, 9 + 1 + rotationRestrictionCounter, GLPKConstants.GLP_DB, 0, M * time);
+
+                        rotationRestrictionCounter++;
+
+
+
                     }
         ///////***********
 
@@ -341,7 +364,7 @@ public class MainController {
                     GLPK.glp_set_col_name(lp, (i+1)+3*(j)+9*(k), "x" + (i + 1) + "," + (j + 1) +"," + (k + 1));
                     GLPK.glp_set_col_kind(lp, (i+1)+3*(j)+9*(k), GLPKConstants.GLP_BV);
                     GLPK.glp_set_col_bnds(lp, (i+1)+3*(j)+9*(k), GLPKConstants.GLP_DB, 0, 1);
-                    GLPK.glp_set_obj_coef(lp, (i+1)+3*(j)+9*(k), fieldProfit);
+                    GLPK.glp_set_obj_coef(lp, (i+1)+3*(j)+9*(k), fieldProfitByTimeFrame);
 
 
 
