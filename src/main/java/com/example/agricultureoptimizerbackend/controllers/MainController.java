@@ -272,7 +272,7 @@ public class MainController {
         int matrixCounter=0;
         int M = 12;
 
-        GLPK.glp_add_rows(lp, 1 + 3*3);
+        GLPK.glp_add_rows(lp, 1 + 3*3+27);
 
         for(int k=0; k< 3; k++){
             for(int j=0; j<3; j++){
@@ -287,41 +287,63 @@ public class MainController {
                     double time = cropList.get(i).getTime();
                     double fieldProfit = (fieldSize/space)*profit;
                     double fieldCost = (fieldSize/space)*cost;
+                    int columnIndex = (i+1)+3*(j)+9*(k);
 
+
+                    //coeficientes e posições da restrição de investimento
                     GLPK.doubleArray_setitem(d, index, fieldCost);
                     GLPK.intArray_setitem(ia, index, 1);
-                    GLPK.intArray_setitem(ja, index, index);
+                    GLPK.intArray_setitem(ja, index, (i+1)+3*(j)+9*(k));
+
+                    index++;
 
 
+                    //coeficientes e posições das restrições de canteiro
+                    GLPK.doubleArray_setitem(d, index, 1.0);
+                    GLPK.intArray_setitem(ia, index, 1+fieldRestrictionCounter);
+                    GLPK.intArray_setitem(ja, index, (i+1)+3*(j)+9*(k));
 
-                    GLPK.doubleArray_setitem(d, index+27, 1.0);
-                    GLPK.intArray_setitem(ia, index+27, 1+fieldRestrictionCounter);
-                    GLPK.intArray_setitem(ja, index+27, index);
+                    index++;
+
+        //***** restrições de rotação
+                   /* GLPK.doubleArray_setitem(d, index + 54, -(M * time));
+                    GLPK.intArray_setitem(ia, index + 54, 9 + 1 + rotationRestrictionCounter);
+                    GLPK.intArray_setitem(ja, index + 54, 0);
+
+                    index++;*/
 
 
-                    /*GLPK.doubleArray_setitem(d, index+54, -(M*time));
-                    GLPK.intArray_setitem(ia, index+54, 9+1+rotationRestrictionCounter);
-                    GLPK.intArray_setitem(ja, index+54, 0);
+                    if(k < 3-time) {
+                        for (int x = 0; x < (int) time && x + (int) time <= 3; x++) {
+                            GLPK.doubleArray_setitem(d, index, M);
+                            GLPK.intArray_setitem(ia, index, 9 + 1 + rotationRestrictionCounter);
+                            GLPK.intArray_setitem(ja, index, (i + 1) + 3 * (j) + 9 * (k+x));
+                            index++;
+                        }
 
-                    for(int x=1; x<=time; x++){
-                        GLPK.doubleArray_setitem(d, x+index+54, M);
-                        GLPK.intArray_setitem(ia, x+index+54, 9+1+rotationRestrictionCounter);
-                        GLPK.intArray_setitem(ja, x+index+54, index);
+                        GLPK.doubleArray_setitem(d, index, 1);
+                        GLPK.intArray_setitem(ia, index, 9 + 1 + rotationRestrictionCounter);
+                        GLPK.intArray_setitem(ja, index, (i + 1) + 3 * (j) + 9 * (k+(int) time) );
+                        index++;
+
+                        GLPK.glp_set_row_name(lp, 9 + 1 + rotationRestrictionCounter, "r" + rotationRestrictionCounter);
+                        GLPK.glp_set_row_bnds(lp, 9 + 1 + rotationRestrictionCounter, GLPKConstants.GLP_DB, 0, M * time);
+
+                        rotationRestrictionCounter++;
                     }
+        ///////***********
 
-                    GLPK.glp_set_row_name(lp, 9+1+rotationRestrictionCounter, "r"+rotationRestrictionCounter);
-                    GLPK.glp_set_row_bnds(lp, 9+1+rotationRestrictionCounter, GLPKConstants.GLP_DB, 0, 0);
-*/
-                    rotationRestrictionCounter++;
+
 
                     matrixCounter+=2;
 
+                    //definindo colunas
                     GLPK.glp_set_col_name(lp, (i+1)+3*(j)+9*(k), "x" + (i + 1) + "," + (j + 1) +"," + (k + 1));
                     GLPK.glp_set_col_kind(lp, (i+1)+3*(j)+9*(k), GLPKConstants.GLP_BV);
                     GLPK.glp_set_col_bnds(lp, (i+1)+3*(j)+9*(k), GLPKConstants.GLP_DB, 0, 1);
                     GLPK.glp_set_obj_coef(lp, (i+1)+3*(j)+9*(k), fieldProfit);
 
-                    index++;
+
 
                 }
 
@@ -329,6 +351,34 @@ public class MainController {
                 GLPK.glp_set_row_bnds(lp, 1+fieldRestrictionCounter, GLPKConstants.GLP_DB, 0, 1);
 
                 fieldRestrictionCounter++;
+
+
+
+                //**************
+               /* for(int i=0; i<cropList.size(); i++) {
+                    double time = cropList.get(i).getTime();
+
+                    GLPK.doubleArray_setitem(d, index + 54, -(M * time));
+                    GLPK.intArray_setitem(ia, index + 54, 9 + 1 + rotationRestrictionCounter);
+                    GLPK.intArray_setitem(ja, index + 54, 0);
+
+                    index++;
+
+                    for (int x = 1; x < time; x++) {
+                        GLPK.doubleArray_setitem(d, index + 54, M);
+                        GLPK.intArray_setitem(ia, index + 54, 9 + 1 + rotationRestrictionCounter);
+                        GLPK.intArray_setitem(ja, index + 54, index);
+                        index++;
+                    }
+
+                    GLPK.glp_set_row_name(lp, 9 + 1 + rotationRestrictionCounter, "r" + rotationRestrictionCounter);
+                    GLPK.glp_set_row_bnds(lp, 9 + 1 + rotationRestrictionCounter, GLPKConstants.GLP_DB, 0, 0);
+
+                    rotationRestrictionCounter++;
+                }*/
+                //********************
+
+
 
                 System.out.println();
             }
@@ -346,7 +396,7 @@ public class MainController {
         //GLPK.glp_set_row_bnds(lp, 2, GLPKConstants.GLP_UP, 0.0, maxSpace);
 
         double[] solution = new double[27];
-        GLPK.glp_load_matrix(lp, 54, ia, ja, d);
+        GLPK.glp_load_matrix(lp, index-1, ia, ja, d);
         //printSystem(lp);
         GLPK.glp_write_lp(lp, null, "my_ourput.txt");
         GLPK.glp_simplex(lp, null);
