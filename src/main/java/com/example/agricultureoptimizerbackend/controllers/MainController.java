@@ -240,25 +240,7 @@ public class MainController {
         List<Crop> cropList = inputData.getSelectedCrops();
         GLPK.glp_add_cols(lp, cropList.size()*3*3);
 
-       /* for (int i = 0; i < cropList.size(); i++) {
 
-            double cost = cropList.get(i).getCost();
-            double space = cropList.get(i).getSpace();
-            double profit = cropList.get(i).getProfit();
-
-            GLPK.doubleArray_setitem(d, i + 1, cost);
-            GLPK.intArray_setitem(ia, i + 1, 1);
-            GLPK.intArray_setitem(ja, i + 1, i + 1);
-
-            GLPK.doubleArray_setitem(d, cropList.size() + i + 1, space);
-            GLPK.intArray_setitem(ia, cropList.size() + i + 1, 2);
-            GLPK.intArray_setitem(ja, cropList.size() + i + 1, i + 1);
-
-            GLPK.glp_set_col_name(lp, i + 1, "x" + (i + 1));
-            GLPK.glp_set_col_kind(lp, i + 1, GLPKConstants.GLP_IV);
-            GLPK.glp_set_col_bnds(lp, i + 1, GLPKConstants.GLP_LO, 0.0, 0.0);
-            GLPK.glp_set_obj_coef(lp, i + 1, profit);
-        }*/
 
         List<Field> fields = new ArrayList<Field>();
         fields.add(new Field(null, 10, "a1"));
@@ -272,13 +254,18 @@ public class MainController {
         int matrixCounter=0;
         int M = 12;
 
-        GLPK.glp_add_rows(lp, 1 + 3*3+27);
+        GLPK.glp_add_rows(lp, 1 + 3*3);
 
-        for(int k=0; k< 3; k++){
-            for(int j=0; j<3; j++){
+        int numI = cropList.size();
+        int numJ = fields.size();
+        int numK = 3;
+        int kSectionSize = numI*numJ;
+
+        for(int k=0; k< numK; k++){
+            for(int j=0; j<numJ; j++){
 
                 double fieldSize = fields.get(j).getSize();
-                for(int i=0; i<cropList.size(); i++){
+                for(int i=0; i<numI; i++){
                     System.out.print(i + "\t");
 
                     double profit = cropList.get(i).getProfit();
@@ -293,7 +280,7 @@ public class MainController {
                     //coeficientes e posições da restrição de investimento
                     GLPK.doubleArray_setitem(d, index, fieldCostByTimeFrame);
                     GLPK.intArray_setitem(ia, index, 1);
-                    GLPK.intArray_setitem(ja, index, (i+1)+3*(j)+9*(k));
+                    GLPK.intArray_setitem(ja, index, columnIndex);
 
                     index++;
 
@@ -301,12 +288,12 @@ public class MainController {
                     //coeficientes e posições das restrições de canteiro
                     GLPK.doubleArray_setitem(d, index, 1.0);
                     GLPK.intArray_setitem(ia, index, 1+fieldRestrictionCounter);
-                    GLPK.intArray_setitem(ja, index, (i+1)+3*(j)+9*(k));
+                    GLPK.intArray_setitem(ja, index, columnIndex);
 
                     index++;
 
         //***** restrições de rotação
-                    
+
 
                     //não plantar sem rotacionar
                     if(k < 3-time) {
@@ -322,6 +309,7 @@ public class MainController {
                         GLPK.intArray_setitem(ja, index, (i + 1) + 3 * (j) + 9 * (k+(int) time) );
                         index++;
 
+                        GLPK.glp_add_rows(lp, 1);
                         GLPK.glp_set_row_name(lp, 9 + 1 + rotationRestrictionCounter, "r" + rotationRestrictionCounter);
                         GLPK.glp_set_row_bnds(lp, 9 + 1 + rotationRestrictionCounter, GLPKConstants.GLP_DB, 0, M * time);
 
