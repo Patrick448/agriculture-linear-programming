@@ -18,6 +18,8 @@ public class InputData {
     private double budget;
     @Column(name = "space", nullable = false)
     private double space;
+    @Column(name = "time_frames", nullable = false)
+    private int timeFrames;
 
     @JsonIgnore
     @OneToOne(mappedBy = "inputData")
@@ -53,6 +55,7 @@ public class InputData {
         this.id = dto.getId();
         this.budget = dto.getBudget();
         this.space = dto.getSpace();
+        this.timeFrames = dto.getTimeFrames();
 
     }
 
@@ -90,5 +93,13 @@ public class InputData {
 
     public void setFields(List<Field> fields) {
         this.fields = fields;
+    }
+
+    public int getTimeFrames() {
+        return timeFrames;
+    }
+
+    public void setTimeFrames(int timeFrames) {
+        this.timeFrames = timeFrames;
     }
 }

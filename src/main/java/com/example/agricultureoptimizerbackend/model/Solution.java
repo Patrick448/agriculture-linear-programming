@@ -17,9 +17,14 @@ public class Solution {
     @OneToMany(mappedBy = "solution",cascade=CascadeType.PERSIST)
     private List<SolutionCrop> solutionCrops;
 
+
     @OneToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name = "input_data_id")
     private InputData inputData;
+
+    @OneToMany(cascade=CascadeType.PERSIST)
+    private List<Field> fields;
+
 
     public Long getId() {
         return id;
@@ -38,6 +43,9 @@ public class Solution {
         InputData inputData = new InputData(dto.getInputData());
         inputData.setSolution(this);
         this.inputData = inputData;
+        this.fields = dto.getFields().stream().map(Field::new).collect(Collectors.toList());
+
+        //this.timeFrames = dto.getTimeFrames();
     }
 
     public List<SolutionCrop> getSolutionCrops() {
@@ -54,5 +62,20 @@ public class Solution {
 
     public void setInputData(InputData inputData) {
         this.inputData = inputData;
+    }
+
+    public Solution(Long id, List<SolutionCrop> solutionCrops, InputData inputData) {
+        this.id = id;
+        this.solutionCrops = solutionCrops;
+        //this.timeFrames = timeFrames;
+        this.inputData = inputData;
+    }
+
+    public List<Field> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<Field> fields) {
+        this.fields = fields;
     }
 }

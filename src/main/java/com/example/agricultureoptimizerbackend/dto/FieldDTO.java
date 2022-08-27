@@ -21,6 +21,8 @@ public class FieldDTO implements Serializable {
         this.name = entity.getName();
     }
 
+
+
     public Long getId() {
         return id;
     }

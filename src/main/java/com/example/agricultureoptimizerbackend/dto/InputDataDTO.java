@@ -13,6 +13,7 @@ public class InputDataDTO implements Serializable {
     private Long id;
     private double budget;
     private double space;
+    private int timeFrames;
     @JsonIgnore
     private SolutionDTO solution;
 
@@ -20,6 +21,7 @@ public class InputDataDTO implements Serializable {
         this.id = entity.getId();
         this.budget = entity.getBudget();
         this.space = entity.getSpace();
+        this.timeFrames = entity.getTimeFrames();
 
     }
 
@@ -52,6 +54,14 @@ public class InputDataDTO implements Serializable {
 
     public SolutionDTO getSolution() {
         return solution;
+    }
+
+    public int getTimeFrames() {
+        return timeFrames;
+    }
+
+    public void setTimeFrames(int timeFrames) {
+        this.timeFrames = timeFrames;
     }
 
     public void setSolution(SolutionDTO solution) {

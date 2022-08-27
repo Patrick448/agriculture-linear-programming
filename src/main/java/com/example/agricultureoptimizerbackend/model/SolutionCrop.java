@@ -37,6 +37,7 @@ public class SolutionCrop {
     private Field field;
 
 
+
     public SolutionCrop() {
     }
 

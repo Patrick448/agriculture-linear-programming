@@ -15,17 +15,27 @@ public class SolutionDTO implements Serializable {
     private Long id;
     private List<SolutionCropDTO> solutionCrops;
     private InputDataDTO inputData;
+    private List<FieldDTO> fields;
+    //private int timeFrames;
 
 
     public SolutionDTO(){
 
     }
 
+    public SolutionDTO(Long id, List<SolutionCropDTO> solutionCrops, InputDataDTO inputData) {
+        this.id = id;
+        this.solutionCrops = solutionCrops;
+        this.inputData = inputData;
+       // this.timeFrames = timeFrames;
+    }
 
     public SolutionDTO(Solution entity) {
         this.id = entity.getId();
         this.solutionCrops = entity.getSolutionCrops().stream().map(SolutionCropDTO::new).collect(Collectors.toList());
+        this.fields = entity.getFields().stream().map(FieldDTO::new).collect(Collectors.toList());
 
+        //this.timeFrames = entity.getTimeFrames();
         if(this.inputData == null)
             this.inputData = new InputDataDTO(entity.getInputData());
     }
@@ -55,4 +65,11 @@ public class SolutionDTO implements Serializable {
         this.inputData = inputData;
     }
 
+    public List<FieldDTO> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<FieldDTO> fields) {
+        this.fields = fields;
+    }
 }

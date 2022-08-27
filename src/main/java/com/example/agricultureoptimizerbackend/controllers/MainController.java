@@ -247,7 +247,7 @@ public class MainController {
 
         int numI = cropList.size();
         int numJ = fields.size();
-        int numK = 3;
+        int numK = inputData.getTimeFrames();
         int kSectionSize = numI * numJ;
         int totalFieldRestr = numJ * numK;
         int totalElements = numI*numJ*numK;
@@ -315,9 +315,9 @@ public class MainController {
                     }
 
                     //não plantar sem que o tempo de cultivo caiba no período estipulado
-                    if (k == numK - time - 1) {
+                    if (k == numK - (int)time-1) {
 
-                        //o índice k vai de 3-time-1 até k+time
+                        //o índice k vai de numk-time-1 até k+time-1
                         // -Xi,j,(k+s-n-1) -...-Xi,j,(s-1) | n=time | s=numK
                         for (int x = 0; x < (int) time; x++) {
                             GLPK.doubleArray_setitem(d, index, -1);
@@ -342,7 +342,6 @@ public class MainController {
 
                     }
                     ///////***********
-
 
                     matrixCounter += 2;
 
@@ -410,11 +409,14 @@ public class MainController {
             solution[i] = value;
         }
 
+        solutionObject.setFields(fields);
+
         solutionService.save(solutionObject);
         System.out.println("z = " + z + "\n");
         DataFileReader.printArray(solution);
         GLPK.glp_delete_prob(lp);
-        return ResponseEntity.ok(new SolutionDTO(solutionObject));
+        SolutionDTO solutionDTO = new SolutionDTO(solutionObject);
+        return ResponseEntity.ok(solutionDTO);
     }
 
 
