@@ -420,6 +420,94 @@ public class MainController {
     }
 
 
+    @PostMapping(value = "/solve-testing")
+    public ResponseEntity<SolutionDTO> solveTesting(HttpServletResponse response, @RequestBody InputData inputData) {
+
+        List<Crop> cropList = inputData.getSelectedCrops();
+        List<Field> fields = inputData.getFields();
+        glp_prob lp;
+        SWIGTYPE_p_int ia;
+        SWIGTYPE_p_int ja;
+        SWIGTYPE_p_double d;
+        lp = GLPK.glp_create_prob();
+
+        GLPK.glp_set_prob_name(lp, "agro");
+        GLPK.glp_set_obj_dir(lp, GLPKConstants.GLP_MAX);
+
+        int numI = cropList.size();
+        int numJ = fields.size();
+        int numK = inputData.getTimeFrames();
+
+        GLPK.glp_add_cols(lp, numI*numJ*numK);
+        d = GLPK.new_doubleArray(numI*numJ*numK);
+        ia = GLPK.new_intArray(numI*numJ*numK);
+        ja = GLPK.new_intArray(numI*numJ*numK);
+
+
+        //setting column names
+        for (int k = 0; k < numK; k++) {
+            for (int j = 0; j < numJ; j++) {
+                for (int i = 0; i < numI; i++) {
+                    int columnIndex =(i + 1) + (numI * (j)) + (numI*numJ * (k));
+
+                    GLPK.glp_set_col_name(lp, columnIndex, "x" + (i + 1) + "," + (j + 1) + "," + (k + 1));
+                    GLPK.glp_set_col_kind(lp, columnIndex, GLPKConstants.GLP_BV);
+                    GLPK.glp_set_col_bnds(lp, columnIndex, GLPKConstants.GLP_DB, 0, 1);
+
+                    //set coefficients for the objective function
+                    GLPK.glp_set_obj_coef(lp, columnIndex, 2.0);
+                }
+            }
+        }
+
+
+        //adding rows
+        GLPK.glp_add_rows(lp, 1);
+        GLPK.glp_set_row_name(lp, 1, "a");
+        GLPK.glp_set_row_bnds(lp, 1, GLPKConstants.GLP_UP, 0, 100.0);
+
+        for (int k = 0; k < numK; k++) {
+            for (int j = 0; j < numJ; j++) {
+                for (int i = 0; i < numI; i++) {
+                    int columnIndex =0;
+
+
+                }
+            }
+        }
+
+
+        //adding coefficients for the equations
+        for (int k = 0; k < numK; k++) {
+            for (int j = 0; j < numJ; j++) {
+                for (int i = 0; i < numI; i++) {
+                    int index = (i + 1) + (numI * (j)) + (numI*numJ * (k));
+                    int column = (i + 1) + (numI * (j));
+                    int row = 1; // iterate according to the amount of equations
+
+                    GLPK.doubleArray_setitem(d, index, 1.0);
+                    GLPK.intArray_setitem(ia, index, row);
+                    GLPK.intArray_setitem(ja, index, index);
+
+                }
+            }
+        }
+
+
+        //load the coefficients
+        GLPK.glp_load_matrix(lp, numI*numJ*numK, ia, ja, d);
+
+        //write problem to file
+        GLPK.glp_write_lp(lp, null, "my_ourput2.txt");
+
+        //solve the problem
+        GLPK.glp_simplex(lp, null);
+        GLPK.glp_intopt(lp, null);
+        double z = GLPK.glp_mip_obj_val(lp);
+
+        return null;
+    }
+
     public void printSystem(glp_prob lp) {
         int numCols = GLPK.glp_get_num_cols(lp) + 1;
         int numRows = GLPK.glp_get_num_rows(lp);
